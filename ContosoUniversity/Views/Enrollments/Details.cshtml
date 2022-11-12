@@ -20,7 +20,7 @@
             @Html.DisplayNameFor(model => model.Course)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Course.CourseID)
+            @Html.DisplayFor(model => model.Course.Id)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Student)
@@ -31,6 +31,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.EnrollmentID">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

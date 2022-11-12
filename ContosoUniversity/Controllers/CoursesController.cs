@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
+using ContosoUniversity.ViewModels;
 
 namespace ContosoUniversity.Controllers
 {
@@ -22,9 +23,25 @@ namespace ContosoUniversity.Controllers
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-              return _context.Courses != null ? 
-                          View(await _context.Courses.ToListAsync()) :
-                          Problem("Entity set 'SchoolContext.Courses'  is null.");
+            //return _context.Courses != null ? 
+            //            View(await _context.Courses.ToListAsync()) :
+            //          Problem("Entity set 'SchoolContext.Courses'  is null.");
+
+            var courses = await _context.Courses.ToListAsync();
+            var result = new List<CourseViewModel>();
+
+            foreach (var course in courses)
+            {
+                var courseViewModel = new CourseViewModel();
+                courseViewModel.Id = course.Id;
+                courseViewModel.Title = course.Title;
+                courseViewModel.Credits = course.Credits;
+                
+                result.Add(courseViewModel);
+            }
+
+            return View(result);
+
         }
 
         // GET: Courses/Details/5
@@ -36,13 +53,18 @@ namespace ContosoUniversity.Controllers
             }
 
             var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.CourseID == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (course == null)
             {
                 return NotFound();
             }
 
-            return View(course);
+            var courseViewModel = new CourseViewModel();
+            courseViewModel.Id = course.Id;
+            courseViewModel.Title = course.Title;
+            courseViewModel.Credits = course.Credits;
+
+            return View(courseViewModel);
         }
 
         // GET: Courses/Create
@@ -56,15 +78,21 @@ namespace ContosoUniversity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CourseID,Title,Credits")] Course course)
+        public async Task<IActionResult> Create(CourseViewModel courseViewModel)
         {
             if (ModelState.IsValid)
             {
+                var course = new Course()
+                {
+                    Id = courseViewModel.Id,
+                    Title = courseViewModel.Title,
+                    Credits = courseViewModel.Credits
+                };
                 _context.Add(course);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(course);
+            return View(courseViewModel);
         }
 
         // GET: Courses/Edit/5
@@ -88,9 +116,9 @@ namespace ContosoUniversity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CourseID,Title,Credits")] Course course)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Credits")] Course course)
         {
-            if (id != course.CourseID)
+            if (id != course.Id)
             {
                 return NotFound();
             }
@@ -104,7 +132,7 @@ namespace ContosoUniversity.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CourseExists(course.CourseID))
+                    if (!CourseExists(course.Id))
                     {
                         return NotFound();
                     }
@@ -127,7 +155,7 @@ namespace ContosoUniversity.Controllers
             }
 
             var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.CourseID == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (course == null)
             {
                 return NotFound();
@@ -157,7 +185,7 @@ namespace ContosoUniversity.Controllers
 
         private bool CourseExists(int id)
         {
-          return (_context.Courses?.Any(e => e.CourseID == id)).GetValueOrDefault();
+          return (_context.Courses?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

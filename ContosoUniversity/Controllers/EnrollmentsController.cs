@@ -37,7 +37,7 @@ namespace ContosoUniversity.Controllers
             var enrollment = await _context.Enrollments
                 .Include(e => e.Course)
                 .Include(e => e.Student)
-                .FirstOrDefaultAsync(m => m.EnrollmentID == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (enrollment == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ namespace ContosoUniversity.Controllers
         // GET: Enrollments/Create
         public IActionResult Create()
         {
-            ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "CourseID");
+            ViewData["Id"] = new SelectList(_context.Courses, "Id", "Id");
             ViewData["StudentID"] = new SelectList(_context.Students, "ID", "ID");
             return View();
         }
@@ -59,7 +59,7 @@ namespace ContosoUniversity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EnrollmentID,CourseID,StudentID,Grade")] Enrollment enrollment)
+        public async Task<IActionResult> Create([Bind("Id,Id,StudentID,Grade")] Enrollment enrollment)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +67,7 @@ namespace ContosoUniversity.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "CourseID", enrollment.CourseID);
+            ViewData["Id"] = new SelectList(_context.Courses, "Id", "Id", enrollment.Id);
             ViewData["StudentID"] = new SelectList(_context.Students, "ID", "ID", enrollment.StudentID);
             return View(enrollment);
         }
@@ -85,7 +85,7 @@ namespace ContosoUniversity.Controllers
             {
                 return NotFound();
             }
-            ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "CourseID", enrollment.CourseID);
+            ViewData["Id"] = new SelectList(_context.Courses, "Id", "Id", enrollment.Id);
             ViewData["StudentID"] = new SelectList(_context.Students, "ID", "ID", enrollment.StudentID);
             return View(enrollment);
         }
@@ -95,9 +95,9 @@ namespace ContosoUniversity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EnrollmentID,CourseID,StudentID,Grade")] Enrollment enrollment)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Id,StudentID,Grade")] Enrollment enrollment)
         {
-            if (id != enrollment.EnrollmentID)
+            if (id != enrollment.Id)
             {
                 return NotFound();
             }
@@ -111,7 +111,7 @@ namespace ContosoUniversity.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EnrollmentExists(enrollment.EnrollmentID))
+                    if (!EnrollmentExists(enrollment.Id))
                     {
                         return NotFound();
                     }
@@ -122,7 +122,7 @@ namespace ContosoUniversity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseID"] = new SelectList(_context.Courses, "CourseID", "CourseID", enrollment.CourseID);
+            ViewData["Id"] = new SelectList(_context.Courses, "Id", "Id", enrollment.Id);
             ViewData["StudentID"] = new SelectList(_context.Students, "ID", "ID", enrollment.StudentID);
             return View(enrollment);
         }
@@ -138,7 +138,7 @@ namespace ContosoUniversity.Controllers
             var enrollment = await _context.Enrollments
                 .Include(e => e.Course)
                 .Include(e => e.Student)
-                .FirstOrDefaultAsync(m => m.EnrollmentID == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (enrollment == null)
             {
                 return NotFound();
@@ -168,7 +168,7 @@ namespace ContosoUniversity.Controllers
 
         private bool EnrollmentExists(int id)
         {
-          return (_context.Enrollments?.Any(e => e.EnrollmentID == id)).GetValueOrDefault();
+          return (_context.Enrollments?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

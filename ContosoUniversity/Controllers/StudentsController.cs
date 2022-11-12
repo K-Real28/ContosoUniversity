@@ -37,7 +37,8 @@ namespace ContosoUniversity.Controllers
         // GET: Students/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Students == null)
+            
+            if (id == null)
             {
                 return NotFound();
             }
@@ -49,7 +50,13 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            return View(student);
+            var studentViewModel = new StudentViewModel();
+            studentViewModel.Id = student.ID;
+            studentViewModel.LastName = student.LastName;
+            studentViewModel.FirstMidName = student.FirstMidName;
+            studentViewModel.EnrollmentDate = student.EnrollmentDate;
+
+            return View(studentViewModel);
         }
 
         // GET: Students/Create
@@ -63,15 +70,22 @@ namespace ContosoUniversity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,LastName,FirstMidName,EnrollmentDate")] Student student)
+        public async Task<IActionResult> Create(StudentViewModel studentViewModel)
         {
             if (ModelState.IsValid)
             {
+                var student = new Student()
+                {
+                    LastName = studentViewModel.LastName,
+                    FirstMidName = studentViewModel.FirstMidName,
+                    EnrollmentDate = studentViewModel.EnrollmentDate
+                };
+
                 _context.Add(student);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(student);
+            return View(studentViewModel);
         }
 
         // GET: Students/Edit/5
@@ -139,7 +153,7 @@ namespace ContosoUniversity.Controllers
         // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Students == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -150,8 +164,13 @@ namespace ContosoUniversity.Controllers
             {
                 return NotFound();
             }
-
-            return View(student);
+            var studentViewModel = new StudentViewModel();
+            studentViewModel.Id = student.ID;
+            studentViewModel.LastName = student.LastName;
+            studentViewModel.FirstMidName = student.FirstMidName;
+            studentViewModel.EnrollmentDate = student.EnrollmentDate;
+  
+            return View(studentViewModel);
         }
 
         // POST: Students/Delete/5
@@ -159,16 +178,12 @@ namespace ContosoUniversity.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Students == null)
+            var student = _context.Students.FirstOrDefault(q => q.ID == id);
+            if (student == null)
             {
-                return Problem("Entity set 'SchoolContext.Students'  is null.");
+                return NotFound();
             }
-            var student = await _context.Students.FindAsync(id);
-            if (student != null)
-            {
-                _context.Students.Remove(student);
-            }
-            
+            _context.Students.Remove(student);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

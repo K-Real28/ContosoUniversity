@@ -1,11 +1,14 @@
-﻿namespace ContosoUniversity.Models
+﻿using ContosoUniversity.Models;
+
+namespace ContosoUniversity.ViewModels
 {
-    public class Course
+    public class CourseViewModel
     {
         public int Id { get; set; }
+
         public string Title { get; set; }
+
         public int Credits { get; set; }
 
-        public ICollection<Enrollment> Enrollments { get; set; }
     }
 }
